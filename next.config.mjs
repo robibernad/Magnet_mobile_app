@@ -1,14 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
-  // PWA config
-  pwa: {
-    dest: "public",
-    register: true,
-    skipWaiting: true,
-    disable: process.env.NODE_ENV === "development"
-  },
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -18,7 +10,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Add headers for service worker
   async headers() {
     return [
       {
