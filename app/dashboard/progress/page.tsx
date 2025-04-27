@@ -13,17 +13,9 @@ export default function ProgressPage() {
     try {
       setIsLoading(true);
 
-      const res = await fetch('http://127.0.0.1:8000/genereaza-imagine/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          x_sonda: 20,
-          y_sonda: 5,
-          z_masurat: 20
-        }),
-      });
+      const res = await fetch('https://mobileapi-production-883d.up.railway.app/genereaza-imagine/', {
+        method: 'POST'
+      });      
 
       const data = await res.json();
       setImageSrc(`data:image/png;base64,${data.image_base64}`);
