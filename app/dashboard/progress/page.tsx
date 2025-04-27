@@ -1,0 +1,86 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Play } from "lucide-react";
+
+export default function ProgressPage() {
+  const [imageSrc, setImageSrc] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleFetchImage = async () => {
+    try {
+      setIsLoading(true);
+
+      const res = await fetch('http://127.0.0.1:8000/genereaza-imagine/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          x_sonda: 20,
+          y_sonda: 5,
+          z_masurat: 20
+        }),
+      });
+
+      const data = await res.json();
+      setImageSrc(`data:image/png;base64,${data.image_base64}`);
+    } catch (error) {
+      console.error('Eroare la fetch:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center p-4">
+      <div className="w-full max-w-5xl">
+        {/* Header */}
+        <div className="flex items-center mb-6 gap-4">
+          <Link href="/dashboard">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
+            </Button>
+          </Link>
+
+          <Button 
+            onClick={handleFetchImage} 
+            className="flex items-center bg-black text-white hover:bg-gray-800"
+          >
+            <Play className="mr-2 h-4 w-4" />
+            View Current Measurement
+          </Button>
+        </div>
+
+        {/* Vizualizare */}
+        <div className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800 aspect-video flex items-center justify-center">
+          {isLoading ? (
+            <div className="text-center">
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-current border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+              <p className="mt-4 text-gray-500 dark:text-gray-400">Loading measurement...</p>
+            </div>
+          ) : imageSrc ? (
+            <img src={imageSrc} alt="Measurement Visualization" className="rounded-lg max-h-full" />
+          ) : (
+            <div className="text-center">
+              <p className="text-gray-500 dark:text-gray-400">Measurement Visualization</p>
+              <p className="text-sm text-gray-400 dark:text-gray-500">
+                Click "View Current Measurement" to start
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Progress bar fake (momentan static) */}
+        <div className="w-full mt-6">
+          <p className="text-center mb-2">Progress: 0%</p>
+          <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '0%' }}></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
