@@ -22,7 +22,7 @@ export default function ProgressPage() {
       setIsLoading(true);
   
       try {
-        const res = await fetch('https://ADRESA-API-TA/genereaza-imagine/', {
+        const res = await fetch('https://apicoordonateraspberry-production.up.railway.app/genereaza-imagine/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
