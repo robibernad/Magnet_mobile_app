@@ -10,7 +10,7 @@ export default function ProgressPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const socket = new WebSocket('wss://ADRESA-TA-API/websocket-endpoint');
+    const socket = new WebSocket('wss://apicoordonateraspberry-production.up.railway.app/websocket-endpoint');
   
     socket.onopen = () => {
       console.log('✅ WebSocket connected');
