@@ -82,13 +82,8 @@ export default function ProgressPage() {
         {coordinates && (
           <div className="w-full mt-6 text-center">
             <h2 className="text-lg font-semibold mb-2">Current Position:</h2>
-            <p>X: {coordinates.x_sonda} mm</p>
-            <p>Y: {coordinates.y_sonda} mm</p>
-            <p>Z (measured from surface): {coordinates.z_masurat} mm</p>
-            <p>Magnet Dimensions:</p>
-            <p> - Length: {coordinates.magnet_length} mm</p>
-            <p> - Width: {coordinates.magnet_width} mm</p>
-            <p> - Height: {coordinates.magnet_height} mm</p>
+            <p>X: {coordinates.x_sonda} mm; Y: {coordinates.y_sonda} mm; Z (measured from surface): {coordinates.z_masurat} mm</p>
+            <p>Magnet Dimensions: X: {coordinates.magnet_length} mm; Y: {coordinates.magnet_width} mm</p>
           </div>
         )}
 
