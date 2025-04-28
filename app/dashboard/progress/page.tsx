@@ -10,30 +10,31 @@ export default function ProgressPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleFetchImage = async () => {
+    setIsLoading(true);
+  
     try {
-      setIsLoading(true);
-
-      // 🔵 Pas 1: obținem ultimele coordonate
-      const coordsRes = await fetch("https://apicoordonateraspberry-production.up.railway.app/get-latest-coordinates/");
-      const coords = await coordsRes.json();
-
-      // 🔵 Pas 2: trimitem coordonatele pentru generare imagine
-      const res = await fetch("https://apicoordonateraspberry-production.up.railway.app/genereaza-imagine/", {
-        method: "POST",
+      // 🔵 1. Cerem cele mai noi coordonate
+      const latestCoordsResponse = await fetch('https://apicoordonateraspberry-production.up.railway.app/get-latest-coordinates/');
+      const latestCoords = await latestCoordsResponse.json();
+  
+      // 🔵 2. Le trimitem la generare imagine
+      const res = await fetch('https://apicoordonateraspberry-production.up.railway.app/genereaza-imagine/', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(coords),
+        body: JSON.stringify(latestCoords),   // 🔵 aici trimitem coordonatele
       });
-
+  
       const data = await res.json();
       setImageSrc(`data:image/png;base64,${data.image_base64}`);
     } catch (error) {
-      console.error("❌ Eroare la fetch:", error);
+      console.error('❌ Eroare la fetch:', error);
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <div className="flex flex-col items-center p-4">
