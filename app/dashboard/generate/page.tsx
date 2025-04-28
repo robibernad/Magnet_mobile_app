@@ -22,7 +22,7 @@ export default function GenerateMagneticField() {
       formData.append("file", file)
 
       try {
-        const res = await fetch('https://**nume-aplicatie.railway.app**/api/upload', {
+        const res = await fetch('https://apicampgenerat-production.up.railway.app/api/upload', {
           method: "POST",
           body: formData,
         })
