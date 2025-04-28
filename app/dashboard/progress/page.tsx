@@ -18,17 +18,20 @@ export default function ProgressPage() {
   
     socket.onmessage = async (event) => {
       console.log('🌐 Date primite prin WebSocket:', event.data);
-  
+    
       setIsLoading(true);
-  
+    
       try {
+        const coords = JSON.parse(event.data);  // decodăm JSON-ul trimis prin WS
+    
         const res = await fetch('https://apicoordonateraspberry-production.up.railway.app/genereaza-imagine/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
+          body: JSON.stringify(coords),   // 🔵 aici trimitem coords primite
         });
-  
+    
         const data = await res.json();
         setImageSrc(`data:image/png;base64,${data.image_base64}`);
       } catch (error) {
@@ -36,7 +39,7 @@ export default function ProgressPage() {
       } finally {
         setIsLoading(false);
       }
-    };
+    };    
   
     socket.onerror = (error) => {
       console.error('❌ WebSocket error:', error);
