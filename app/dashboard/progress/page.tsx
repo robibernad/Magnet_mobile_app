@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Play } from "lucide-react";
@@ -9,47 +9,32 @@ export default function ProgressPage() {
   const [imageSrc, setImageSrc] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const socket = new WebSocket('wss://apicoordonateraspberry-production.up.railway.app/ws');
-  
-    socket.onopen = () => {
-      console.log('✅ WebSocket connected');
-    };
-  
-    socket.onmessage = async (event) => {
-      console.log('🌐 Date primite prin WebSocket:', event.data);
-    
+  const handleFetchImage = async () => {
+    try {
       setIsLoading(true);
-    
-      try {
-        const coords = JSON.parse(event.data);  // decodăm JSON-ul trimis prin WS
-    
-        const res = await fetch('https://apicoordonateraspberry-production.up.railway.app/genereaza-imagine/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(coords),   // 🔵 aici trimitem coords primite
-        });
-    
-        const data = await res.json();
-        setImageSrc(`data:image/png;base64,${data.image_base64}`);
-      } catch (error) {
-        console.error('❌ Eroare la fetch:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };    
-  
-    socket.onerror = (error) => {
-      console.error('❌ WebSocket error:', error);
-    };
-  
-    return () => {
-      socket.close();
-    };
-  }, []);
-  
+
+      // 🔵 Pas 1: obținem ultimele coordonate
+      const coordsRes = await fetch("https://apicoordonateraspberry-production.up.railway.app/get-latest-coordinates/");
+      const coords = await coordsRes.json();
+
+      // 🔵 Pas 2: trimitem coordonatele pentru generare imagine
+      const res = await fetch("https://apicoordonateraspberry-production.up.railway.app/genereaza-imagine/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(coords),
+      });
+
+      const data = await res.json();
+      setImageSrc(`data:image/png;base64,${data.image_base64}`);
+    } catch (error) {
+      console.error("❌ Eroare la fetch:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center p-4">
       <div className="w-full max-w-5xl">
@@ -60,6 +45,14 @@ export default function ProgressPage() {
               <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
             </Button>
           </Link>
+
+          <Button 
+            onClick={handleFetchImage}
+            className="flex items-center bg-black text-white hover:bg-gray-800"
+          >
+            <Play className="mr-2 h-4 w-4" />
+            View Current Measurement
+          </Button>
         </div>
 
         {/* Vizualizare */}
@@ -75,7 +68,7 @@ export default function ProgressPage() {
             <div className="text-center">
               <p className="text-gray-500 dark:text-gray-400">No data yet.</p>
               <p className="text-sm text-gray-400 dark:text-gray-500">
-                Waiting for live measurements...
+                Click "View Current Measurement" to start
               </p>
             </div>
           )}
