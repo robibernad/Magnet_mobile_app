@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Play } from "lucide-react";
@@ -9,22 +9,50 @@ export default function ProgressPage() {
   const [imageSrc, setImageSrc] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleFetchImage = async () => {
-    try {
+  useEffect(() => {
+    const socket = new WebSocket("wss://ADRESA-TA-API-RAILWAY/ws");
+
+    socket.onopen = () => {
+      console.log("✅ WebSocket connected");
+    };
+
+    socket.onmessage = async (event) => {
+      console.log("📩 Coordonate noi primite:", event.data);
+      
       setIsLoading(true);
 
-      const res = await fetch('https://mobileapi-production-883d.up.railway.app/genereaza-imagine/', {
-        method: 'POST'
-      });      
+      try {
+        const res = await fetch('https://apicoordonateraspberry-production.up.railway.app/genereaza-imagine/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          // AICI e important: îi poți trimite coordonatele din event dacă vrei, 
+          // dar dacă API-ul tău genereză imaginea pe baza ultimelor coordonate salvate global, nu trebuie body
+        });
 
-      const data = await res.json();
-      setImageSrc(`data:image/png;base64,${data.image_base64}`);
-    } catch (error) {
-      console.error('Eroare la fetch:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        const data = await res.json();
+        setImageSrc(`data:image/png;base64,${data.image_base64}`);
+      } catch (error) {
+        console.error('❌ Eroare la fetch:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    socket.onerror = (error) => {
+      console.error("❌ WebSocket error:", error);
+    };
+
+    socket.onclose = () => {
+      console.log("🔌 WebSocket disconnected");
+    };
+
+    // Cleanup: închide socket când componenta dispare
+    return () => {
+      socket.close();
+    };
+  }, []);
 
   return (
     <div className="flex flex-col items-center p-4">
@@ -36,14 +64,6 @@ export default function ProgressPage() {
               <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
             </Button>
           </Link>
-
-          <Button 
-            onClick={handleFetchImage} 
-            className="flex items-center bg-black text-white hover:bg-gray-800"
-          >
-            <Play className="mr-2 h-4 w-4" />
-            View Current Measurement
-          </Button>
         </div>
 
         {/* Vizualizare */}
@@ -57,20 +77,12 @@ export default function ProgressPage() {
             <img src={imageSrc} alt="Measurement Visualization" className="rounded-lg max-h-full" />
           ) : (
             <div className="text-center">
-              <p className="text-gray-500 dark:text-gray-400">Measurement Visualization</p>
+              <p className="text-gray-500 dark:text-gray-400">No data yet.</p>
               <p className="text-sm text-gray-400 dark:text-gray-500">
-                Click "View Current Measurement" to start
+                Waiting for live measurements...
               </p>
             </div>
           )}
-        </div>
-
-        {/* Progress bar fake (momentan static) */}
-        <div className="w-full mt-6">
-          <p className="text-center mb-2">Progress: 0%</p>
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
-            <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '0%' }}></div>
-          </div>
         </div>
       </div>
     </div>
