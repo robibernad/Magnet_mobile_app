@@ -8,7 +8,8 @@ import { ArrowLeft, Play } from "lucide-react";
 export default function ProgressPage() {
   const [imageSrc, setImageSrc] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
-  const [progress, setProgress] = useState<number>(0);  // 🆕 adăugat progress
+  const [progress, setProgress] = useState<number>(0);
+  const [coordinates, setCoordinates] = useState<any>(null); // 🆕 adăugat state pentru coordonate
 
   const handleFetchImage = async () => {
     try {
@@ -18,7 +19,8 @@ export default function ProgressPage() {
       const coordRes = await fetch('https://apicoordonateraspberry-production.up.railway.app/get-latest-coordinates/');
       const coords = await coordRes.json();
 
-      setProgress(coords.progress); // 🆕 setăm progresul local
+      setCoordinates(coords); // 🆕 salvăm coordonatele
+      setProgress(coords.progress); // 🆕 progresul
 
       const res = await fetch('https://apicoordonateraspberry-production.up.railway.app/genereaza-imagine/', {
         method: 'POST',
@@ -75,6 +77,20 @@ export default function ProgressPage() {
             </div>
           )}
         </div>
+
+        {/* 🔵 Current Position */}
+        {coordinates && (
+          <div className="w-full mt-6 text-center">
+            <h2 className="text-lg font-semibold mb-2">Current Position:</h2>
+            <p>X: {coordinates.x_sonda} mm</p>
+            <p>Y: {coordinates.y_sonda} mm</p>
+            <p>Z (measured from surface): {coordinates.z_masurat} mm</p>
+            <p>Magnet Dimensions:</p>
+            <p> - Length: {coordinates.magnet_length} mm</p>
+            <p> - Width: {coordinates.magnet_width} mm</p>
+            <p> - Height: {coordinates.magnet_height} mm</p>
+          </div>
+        )}
 
         {/* 🔵 Progress bar */}
         <div className="w-full mt-6">
