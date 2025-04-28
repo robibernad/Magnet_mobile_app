@@ -10,27 +10,25 @@ export default function ProgressPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const socket = new WebSocket("wss://ADRESA-TA-API-RAILWAY/ws");
-
+    const socket = new WebSocket('wss://ADRESA-TA-API/websocket-endpoint');
+  
     socket.onopen = () => {
-      console.log("✅ WebSocket connected");
+      console.log('✅ WebSocket connected');
     };
-
+  
     socket.onmessage = async (event) => {
-      console.log("📩 Coordonate noi primite:", event.data);
-      
+      console.log('🌐 Date primite prin WebSocket:', event.data);
+  
       setIsLoading(true);
-
+  
       try {
-        const res = await fetch('https://apicoordonateraspberry-production.up.railway.app/genereaza-imagine/', {
+        const res = await fetch('https://ADRESA-API-TA/genereaza-imagine/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          // AICI e important: îi poți trimite coordonatele din event dacă vrei, 
-          // dar dacă API-ul tău genereză imaginea pe baza ultimelor coordonate salvate global, nu trebuie body
         });
-
+  
         const data = await res.json();
         setImageSrc(`data:image/png;base64,${data.image_base64}`);
       } catch (error) {
@@ -39,21 +37,16 @@ export default function ProgressPage() {
         setIsLoading(false);
       }
     };
-
+  
     socket.onerror = (error) => {
-      console.error("❌ WebSocket error:", error);
+      console.error('❌ WebSocket error:', error);
     };
-
-    socket.onclose = () => {
-      console.log("🔌 WebSocket disconnected");
-    };
-
-    // Cleanup: închide socket când componenta dispare
+  
     return () => {
       socket.close();
     };
   }, []);
-
+  
   return (
     <div className="flex flex-col items-center p-4">
       <div className="w-full max-w-5xl">
