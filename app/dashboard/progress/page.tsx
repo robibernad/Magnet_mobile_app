@@ -8,24 +8,26 @@ import { ArrowLeft, Play } from "lucide-react";
 export default function ProgressPage() {
   const [imageSrc, setImageSrc] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState<number>(0);  // 🆕 adăugat progress
 
   const handleFetchImage = async () => {
-    setIsLoading(true);
-  
     try {
-      // 🔵 1. Cerem cele mai noi coordonate
-      const latestCoordsResponse = await fetch('https://apicoordonateraspberry-production.up.railway.app/get-latest-coordinates/');
-      const latestCoords = await latestCoordsResponse.json();
-  
-      // 🔵 2. Le trimitem la generare imagine
+      setIsLoading(true);
+
+      // 🔵 Primim ultimele coordonate + progres
+      const coordRes = await fetch('https://apicoordonateraspberry-production.up.railway.app/get-latest-coordinates/');
+      const coords = await coordRes.json();
+
+      setProgress(coords.progress); // 🆕 setăm progresul local
+
       const res = await fetch('https://apicoordonateraspberry-production.up.railway.app/genereaza-imagine/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(latestCoords),   // 🔵 aici trimitem coordonatele
+        body: JSON.stringify(coords),
       });
-  
+
       const data = await res.json();
       setImageSrc(`data:image/png;base64,${data.image_base64}`);
     } catch (error) {
@@ -34,7 +36,6 @@ export default function ProgressPage() {
       setIsLoading(false);
     }
   };
-  
 
   return (
     <div className="flex flex-col items-center p-4">
@@ -48,7 +49,7 @@ export default function ProgressPage() {
           </Link>
 
           <Button 
-            onClick={handleFetchImage}
+            onClick={handleFetchImage} 
             className="flex items-center bg-black text-white hover:bg-gray-800"
           >
             <Play className="mr-2 h-4 w-4" />
@@ -74,6 +75,18 @@ export default function ProgressPage() {
             </div>
           )}
         </div>
+
+        {/* 🔵 Progress bar */}
+        <div className="w-full mt-6">
+          <p className="text-center mb-2">Progress: {progress}%</p>
+          <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div
+              className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
+        </div>
+
       </div>
     </div>
   );
