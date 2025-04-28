@@ -1,37 +1,45 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Upload } from "lucide-react"
 
 export default function GenerateMagneticField() {
-  const [isSimulating, setIsSimulating] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [plotUrl, setPlotUrl] = useState<string | null>(null)
 
   const handleLocalUpload = () => {
-    // Trigger file input click
     document.getElementById("local-file-input")?.click()
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      // Simulate processing the file
-      setIsSimulating(true)
-      setTimeout(() => {
-        setIsSimulating(false)
-      }, 2000)
-    }
-  }
+      setIsLoading(true)
 
-  const handleGoogleDriveUpload = () => {
-    // In a real app, this would integrate with Google Drive API
-    setIsSimulating(true)
-    setTimeout(() => {
-      setIsSimulating(false)
-    }, 2000)
+      const formData = new FormData()
+      formData.append("file", file)
+
+      try {
+        const res = await fetch('https://**nume-aplicatie.railway.app**/api/upload', {
+          method: "POST",
+          body: formData,
+        })
+
+        if (!res.ok) {
+          throw new Error("Upload failed")
+        }
+
+        const data = await res.json()
+        setPlotUrl(data.url)
+      } catch (error) {
+        console.error("Upload error:", error)
+        setPlotUrl(null)
+      } finally {
+        setIsLoading(false)
+      }
+    }
   }
 
   return (
@@ -57,21 +65,22 @@ export default function GenerateMagneticField() {
             type="file"
             className="hidden"
             onChange={handleFileChange}
-            accept=".csv,.json,.txt"
+            accept=".xlsx"
           />
-
-          <Button onClick={handleGoogleDriveUpload} className="flex items-center">
-            <Upload className="mr-2 h-4 w-4" />
-            Upload Measurement Data from Google Drive
-          </Button>
         </div>
 
         <div className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800 aspect-video flex items-center justify-center">
-          {isSimulating ? (
+          {isLoading ? (
             <div className="text-center">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-              <p className="mt-4">Simulating magnetic field...</p>
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
+              <p className="mt-4">Generating magnetic field...</p>
             </div>
+          ) : plotUrl ? (
+            <iframe
+              src={plotUrl}
+              className="w-full h-full rounded-lg border-0"
+              title="Magnetic Field Plot"
+            ></iframe>
           ) : (
             <div className="text-center">
               <p className="text-gray-500 dark:text-gray-400">Magnetic Field Visualization</p>
