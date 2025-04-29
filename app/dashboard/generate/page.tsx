@@ -77,10 +77,10 @@ export default function GenerateMagneticField() {
             </div>
           ) : plotUrl ? (
             <iframe
-              src={plotUrl}
+              src={`https://apicampgenerat-production.up.railway.app${plotUrl}`}
               className="w-full h-full rounded-lg border-0"
               title="Magnetic Field Plot"
-            ></iframe>
+            />
           ) : (
             <div className="text-center">
               <p className="text-gray-500 dark:text-gray-400">Magnetic Field Visualization</p>
