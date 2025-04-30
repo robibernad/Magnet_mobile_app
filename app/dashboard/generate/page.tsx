@@ -78,12 +78,15 @@ export default function GenerateMagneticField() {
         body: formData,
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        throw new Error("Generarea graficului 2D a eșuat");
+        alert(data.error || "Out of range");
+        setPlotUrl(null);
+        return;
       }
 
-      const data = await res.json();
-      setPlot2DUrl(data.url);
+      setPlot2DUrl(`${data.url}?t=${Date.now()}`);
     } catch (error) {
       console.error("Eroare la generare grafic 2D:", error);
       setPlot2DUrl(null);
