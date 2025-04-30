@@ -82,7 +82,7 @@ export default function GenerateMagneticField() {
 
       if (!res.ok) {
         alert(data.error || "Out of range");
-        setPlotUrl(null);
+        setPlot2DUrl(null);
         return;
       }
 
