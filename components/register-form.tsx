@@ -28,21 +28,22 @@ export function RegisterForm() {
     const email = formData.get("email") as string
     const password = formData.get("password") as string
 
-    try {
-      await register(name, email, password)
-      router.push("/dashboard")
-      router.refresh()
-    } catch (error: any) {
-      const message = error?.message || "";
+    const result = await register(name, email, password);
+
+    if (result?.success) {
+      router.push("/dashboard");
+      router.refresh();
+    } else {
+      const code = result?.errorCode || "";
     
-      if (message.includes("auth/email-already-in-use")) {
+      if (code === "auth/email-already-in-use") {
         setError("Email already taken. Try logging in.");
-      } else if (message.includes("auth/weak-password")) {
+      } else if (code === "auth/weak-password") {
         setError("Password must be at least 6 characters.");
-      } else if (message.includes("auth/invalid-email")) {
+      } else if (code === "auth/invalid-email") {
         setError("Invalid email address.");
       } else {
-        console.error("Unexpected error:", error);
+        console.error("Unexpected error:", code);
         setError("Something went wrong.");
       }
     

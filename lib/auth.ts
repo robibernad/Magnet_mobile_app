@@ -45,8 +45,10 @@ export async function register(name: string, email: string, password: string) {
 
     return { success: true };
   } catch (error: any) {
-    console.error("Firebase registration error:", error); 
-    throw error;
+    console.error("Firebase registration error:", error);
+  
+    // Returnează codul de eroare în loc să arunci
+    return { success: false, errorCode: error?.code || "unknown-error" };
   }
 }
 
