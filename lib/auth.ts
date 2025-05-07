@@ -1,52 +1,72 @@
-"use server"
+"use server";
 
-import { cookies } from "next/headers"
+import { initializeApp } from "firebase/app";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
+} from "firebase/auth";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { cookies } from "next/headers";
 
-// In a real app, you would use a proper authentication system
-// This is a simplified version for demonstration purposes
+// Firebase config (înlocuiește cu datele tale)
+const firebaseConfig = {
+  apiKey: "AIzaSyD8h9YH609T3dbBXKQTdAEFOPqiQAR0WTQ",
+  authDomain: "magnet-mobile-app.firebaseapp.com",
+  projectId: "magnet-mobile-app",
+  storageBucket: "magnet-mobile-app.firebasestorage.app",
+  messagingSenderId: "967272698587",
+  appId: "1:967272698587:web:5fc81c4d2659b71cac32fe"
+};
 
-export async function login(email: string, password: string) {
-  // Simulate authentication delay
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-
-  // Simple validation (in a real app, you would verify credentials against a database)
-  if (email && password) {
-    // Set a cookie to simulate authentication
-    cookies().set("auth", "authenticated", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-      path: "/",
-    })
-
-    return { success: true }
-  }
-
-  throw new Error("Invalid credentials")
-}
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 export async function register(name: string, email: string, password: string) {
-  // Simulate registration delay
-  await new Promise((resolve) => setTimeout(resolve, 1000))
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
 
-  // Simple validation (in a real app, you would store user data in a database)
-  if (name && email && password) {
-    // Set a cookie to simulate authentication
+    await setDoc(doc(db, "users", user.uid), {
+      name,
+      email,
+      createdAt: new Date(),
+    });
+
+    // Cookie de autentificare (opțional)
     cookies().set("auth", "authenticated", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 7, // 1 week
       path: "/",
-    })
+    });
 
-    return { success: true }
+    return { success: true };
+  } catch (error: any) {
+    console.error("Firebase registration error:", error); 
+    throw error;
   }
+}
 
-  throw new Error("Registration failed")
+export async function login(email: string, password: string) {
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+
+    cookies().set("auth", "authenticated", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    });
+
+    return { success: true };
+  } catch (error) {
+    throw new Error("Registration failed");
+  } 
 }
 
 export async function logout() {
-  // Delete the authentication cookie
-  cookies().delete("auth")
-  return { success: true }
+  cookies().delete("auth");
+  return { success: true };
 }

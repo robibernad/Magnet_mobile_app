@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { register } from "@/lib/auth"
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 export function RegisterForm() {
   const router = useRouter()
@@ -29,9 +32,21 @@ export function RegisterForm() {
       await register(name, email, password)
       router.push("/dashboard")
       router.refresh()
-    } catch (error) {
-      setError("Registration failed. Please try again.")
-      setIsLoading(false)
+    } catch (error: any) {
+      const message = error?.message || "";
+    
+      if (message.includes("auth/email-already-in-use")) {
+        setError("Email already taken. Try logging in.");
+      } else if (message.includes("auth/weak-password")) {
+        setError("Password must be at least 6 characters.");
+      } else if (message.includes("auth/invalid-email")) {
+        setError("Invalid email address.");
+      } else {
+        console.error("Unexpected error:", error);
+        setError("Something went wrong.");
+      }
+    
+      setIsLoading(false);
     }
   }
 
