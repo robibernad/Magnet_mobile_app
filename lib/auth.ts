@@ -11,12 +11,12 @@ import { cookies } from "next/headers";
 
 // Firebase config (înlocuiește cu datele tale)
 const firebaseConfig = {
-  apiKey: "AIzaSyD8h9YH609T3dbBXKQTdAEFOPqiQAR0WTQ",
-  authDomain: "magnet-mobile-app.firebaseapp.com",
-  projectId: "magnet-mobile-app",
-  storageBucket: "magnet-mobile-app.firebasestorage.app",
-  messagingSenderId: "967272698587",
-  appId: "1:967272698587:web:5fc81c4d2659b71cac32fe"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 const app = initializeApp(firebaseConfig);
