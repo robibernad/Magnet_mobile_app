@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Upload } from "lucide-react";
+import * as XLSX from "xlsx";
 
 export default function GenerateMagneticField() {
   const [isLoading3D, setIsLoading3D] = useState(false);
@@ -12,6 +13,7 @@ export default function GenerateMagneticField() {
   const [show2DForm, setShow2DForm] = useState(false);
   const [isLoading2D, setIsLoading2D] = useState(false);
   const [plot2DUrl, setPlot2DUrl] = useState<string | null>(null);
+  const [plot2DData, setPlot2DData] = useState<Array<{ x: number, y: number, z: number, value: number }> | null>(null);
 
   const [file, setFile] = useState<File | null>(null);
   const [x, setX] = useState<string>("");
@@ -83,16 +85,29 @@ export default function GenerateMagneticField() {
       if (!res.ok) {
         alert(data.error || "Out of range");
         setPlot2DUrl(null);
+        setPlot2DData(null);
         return;
       }
 
       setPlot2DUrl(`${data.url}?t=${Date.now()}`);
+      setPlot2DData(data.table || []);
     } catch (error) {
       console.error("Eroare la generare grafic 2D:", error);
       setPlot2DUrl(null);
+      setPlot2DData(null);
     } finally {
       setIsLoading2D(false);
     }
+  };
+
+  const handleDownloadTable = () => {
+    if (!plot2DData || plot2DData.length === 0) return;
+
+    const worksheet = XLSX.utils.json_to_sheet(plot2DData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "MagneticField");
+
+    XLSX.writeFile(workbook, "magnetic_field_2d_data.xlsx");
   };
 
   return (
@@ -179,15 +194,47 @@ export default function GenerateMagneticField() {
           )}
         </div>
 
-        {/* Afișare grafic 2D */}
+        {/* Afișare grafic 2D și tabel */}
         {plot2DUrl && (
-          <div className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800 aspect-video flex items-center justify-center">
-            <iframe
-              src={`https://apicampgenerat-production.up.railway.app${plot2DUrl}`}
-              className="w-full h-full rounded-lg border-0"
-              title="Magnetic Field Cross Section"
-            />
-          </div>
+          <>
+            <div className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800 aspect-video flex items-center justify-center">
+              <iframe
+                src={`https://apicampgenerat-production.up.railway.app${plot2DUrl}`}
+                className="w-full h-full rounded-lg border-0"
+                title="Magnetic Field Cross Section"
+              />
+            </div>
+
+            {plot2DData && plot2DData.length > 0 && (
+              <>
+                <div className="overflow-x-auto mt-6">
+                  <table className="min-w-full border border-gray-300 text-sm">
+                    <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                      <tr>
+                        <th className="px-3 py-2 border">X</th>
+                        <th className="px-3 py-2 border">Y</th>
+                        <th className="px-3 py-2 border">Z</th>
+                        <th className="px-3 py-2 border">Value (T)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {plot2DData.map((row, index) => (
+                        <tr key={index} className="text-center">
+                          <td className="px-3 py-1 border">{row.x}</td>
+                          <td className="px-3 py-1 border">{row.y}</td>
+                          <td className="px-3 py-1 border">{row.z}</td>
+                          <td className="px-3 py-1 border">{row.value.toFixed(4)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <Button onClick={handleDownloadTable} className="mt-4">
+                  Download Table as .xlsx
+                </Button>
+              </>
+            )}
+          </>
         )}
       </div>
     </div>
