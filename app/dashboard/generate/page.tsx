@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Upload } from "lucide-react";
@@ -23,6 +23,12 @@ export default function GenerateMagneticField() {
   const [x, setX] = useState<string>("");
   const [y, setY] = useState<string>("");
   const [z, setZ] = useState<string>("");
+
+  const [show2DTable, setShow2DTable] = useState(true);
+  const [showZTable, setShowZTable] = useState(true);
+
+  const ref2D = useRef<HTMLDivElement>(null);
+  const refZ = useRef<HTMLDivElement>(null);
 
   const handleLocalUpload = () => {
     document.getElementById("local-file-input")?.click();
@@ -282,33 +288,40 @@ export default function GenerateMagneticField() {
             </div>
 
             {plot2DData && plot2DData.length > 0 && (
-              <>
-                <div className="overflow-x-auto mt-6">
-                  <table className="min-w-full border border-gray-300 text-sm">
-                    <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
-                      <tr>
-                        <th className="px-3 py-2 border">X</th>
-                        <th className="px-3 py-2 border">Y</th>
-                        <th className="px-3 py-2 border">Z</th>
-                        <th className="px-3 py-2 border">Value (T)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {plot2DData.map((row, index) => (
-                        <tr key={index} className="text-center">
-                          <td className="px-3 py-1 border">{row.x}</td>
-                          <td className="px-3 py-1 border">{row.y}</td>
-                          <td className="px-3 py-1 border">{row.z}</td>
-                          <td className="px-3 py-1 border">{row.value.toFixed(4)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <Button onClick={handleDownloadTable} className="mt-4">
-                  Download Table as .xlsx
+              <div ref={ref2D}>
+                <Button onClick={() => setShow2DTable((prev) => !prev)} className="mt-4" variant="secondary">
+                  {show2DTable ? "Hide 2D Table" : "Show 2D Table"}
                 </Button>
-              </>
+                {show2DTable && (
+                  <>
+                    <div className="overflow-x-auto mt-4">
+                      <table className="min-w-full border border-gray-300 text-sm">
+                        <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                          <tr>
+                            <th className="px-3 py-2 border">X</th>
+                            <th className="px-3 py-2 border">Y</th>
+                            <th className="px-3 py-2 border">Z</th>
+                            <th className="px-3 py-2 border">Value (T)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {plot2DData.map((row, index) => (
+                            <tr key={index} className="text-center">
+                              <td className="px-3 py-1 border">{row.x}</td>
+                              <td className="px-3 py-1 border">{row.y}</td>
+                              <td className="px-3 py-1 border">{row.z}</td>
+                              <td className="px-3 py-1 border">{row.value.toFixed(4)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <Button onClick={handleDownloadTable} className="mt-4">
+                      Download Table as .xlsx
+                    </Button>
+                  </>
+                )}
+              </div>
             )}
           </>
         )}
@@ -325,37 +338,60 @@ export default function GenerateMagneticField() {
             </div>
 
             {zSectionData && zSectionData.length > 0 && (
-              <>
-                <div className="overflow-x-auto mt-6">
-                  <table className="min-w-full border border-gray-300 text-sm">
-                    <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
-                      <tr>
-                        <th className="px-3 py-2 border">X</th>
-                        <th className="px-3 py-2 border">Y</th>
-                        <th className="px-3 py-2 border">Z</th>
-                        <th className="px-3 py-2 border">Value (T)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {zSectionData.map((row, index) => (
-                        <tr key={index} className="text-center">
-                          <td className="px-3 py-1 border">{row.x}</td>
-                          <td className="px-3 py-1 border">{row.y}</td>
-                          <td className="px-3 py-1 border">{row.z}</td>
-                          <td className="px-3 py-1 border">{row.value.toFixed(4)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <Button onClick={handleDownloadZSection} className="mt-4">
-                  Download Z Section as .xlsx
+              <div ref={refZ}>
+                <Button onClick={() => setShowZTable((prev) => !prev)} className="mt-4" variant="secondary">
+                  {showZTable ? "Hide Z Table" : "Show Z Table"}
                 </Button>
-              </>
+                {showZTable && (
+                  <>
+                    <div className="overflow-x-auto mt-4">
+                      <table className="min-w-full border border-gray-300 text-sm">
+                        <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                          <tr>
+                            <th className="px-3 py-2 border">X</th>
+                            <th className="px-3 py-2 border">Y</th>
+                            <th className="px-3 py-2 border">Z</th>
+                            <th className="px-3 py-2 border">Value (T)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {zSectionData.map((row, index) => (
+                            <tr key={index} className="text-center">
+                              <td className="px-3 py-1 border">{row.x}</td>
+                              <td className="px-3 py-1 border">{row.y}</td>
+                              <td className="px-3 py-1 border">{row.z}</td>
+                              <td className="px-3 py-1 border">{row.value.toFixed(4)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <Button onClick={handleDownloadZSection} className="mt-4">
+                      Download Z Section as .xlsx
+                    </Button>
+                  </>
+                )}
+              </div>
             )}
           </>
         )}
       </div>
+
+      {/* Butoane fixe pentru scroll */}
+      {(plot2DUrl || zSectionUrl) && (
+        <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
+          {plot2DUrl && (
+            <Button onClick={() => ref2D.current?.scrollIntoView({ behavior: "smooth" })} variant="outline" className="shadow">
+              Go to 2D Table
+            </Button>
+          )}
+          {zSectionUrl && (
+            <Button onClick={() => refZ.current?.scrollIntoView({ behavior: "smooth" })} variant="outline" className="shadow">
+              Go to Z Table
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
