@@ -102,13 +102,28 @@ export default function GenerateMagneticField() {
 
   const handleDownloadTable = () => {
     if (!plot2DData || plot2DData.length === 0) return;
-
+  
+    const filled = [
+      x.trim() !== "" ? `x${x.trim()}` : null,
+      y.trim() !== "" ? `y${y.trim()}` : null,
+      z.trim() !== "" ? `z${z.trim()}` : null,
+    ].filter(Boolean);
+  
+    // Determină axa variabilă
+    let axis = "field";
+    if (x.trim() === "") axis = "fieldx";
+    else if (y.trim() === "") axis = "fieldy";
+    else if (z.trim() === "") axis = "fieldz";
+  
+    const filename = `${axis}_${filled.join("_")}.xlsx`;
+  
     const worksheet = XLSX.utils.json_to_sheet(plot2DData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "MagneticField");
-
-    XLSX.writeFile(workbook, "magnetic_field_2d_data.xlsx");
+  
+    XLSX.writeFile(workbook, filename);
   };
+  
 
   return (
     <div className="min-h-screen p-4">
