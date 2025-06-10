@@ -16,6 +16,7 @@ export default function Dashboard() {
             </Button>
           </Link>
         </div>
+        <div style={{ height: "0.5rem" }}></div>
         <div className="w-full mt-2">
           <Link href="/dashboard/progress" className="w-full block">
             <Button size="lg" className="w-full">
