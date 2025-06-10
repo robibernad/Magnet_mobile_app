@@ -175,7 +175,7 @@ export default function GenerateMagneticField() {
               <Button onClick={handleGenerate2DGraph}>Generate 2D</Button>
               <Button onClick={handleGenerateSection}>Generate Section</Button>
             </div>
-            <p className="text-sm text-gray-500">Pentru 2D: completează exact două câmpuri. Pentru secțiune: doar unul.</p>
+            <p className="text-sm text-gray-500">For 2D section add exactly 2 values. For section-view add only 1 value.</p>
           </div>
         )}
 
