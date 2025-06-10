@@ -32,7 +32,7 @@ export default function ProgressPage() {
       const data = await res.json();
       setImageSrc(`data:image/png;base64,${data.image_base64}`);
     } catch (error) {
-      console.error('❌ Eroare la fetch:', error);
+      console.error('Eroare la fetch:', error);
     } finally {
       setIsLoading(false);
     }
