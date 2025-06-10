@@ -9,7 +9,6 @@ import {
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { cookies } from "next/headers";
 
-// Firebase config (înlocuiește cu datele tale)
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
@@ -35,11 +34,10 @@ export async function register(name: string, email: string, password: string) {
       createdAt: new Date(),
     });
 
-    // Cookie de autentificare (opțional)
     cookies().set("auth", "authenticated", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 7, // 1 week
+      maxAge: 60 * 60 * 24 * 7, 
       path: "/",
     });
 
@@ -47,7 +45,6 @@ export async function register(name: string, email: string, password: string) {
   } catch (error: any) {
     console.error("Firebase registration error:", error);
   
-    // Returnează codul de eroare în loc să arunci
     return { success: false, errorCode: error?.code || "unknown-error" };
   }
 }

@@ -3,7 +3,6 @@ import { cookies } from "next/headers"
 import { RegisterForm } from "@/components/register-form"
 
 export default function Register() {
-  // Check if user is logged in
   const cookieStore = cookies()
   const isLoggedIn = cookieStore.has("auth")
 

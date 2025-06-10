@@ -9,18 +9,17 @@ export default function ProgressPage() {
   const [imageSrc, setImageSrc] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState<number>(0);
-  const [coordinates, setCoordinates] = useState<any>(null); // 🆕 adăugat state pentru coordonate
+  const [coordinates, setCoordinates] = useState<any>(null); 
 
   const handleFetchImage = async () => {
     try {
       setIsLoading(true);
 
-      // 🔵 Primim ultimele coordonate + progres
       const coordRes = await fetch('https://apicoordonateraspberry-production.up.railway.app/get-latest-coordinates/');
       const coords = await coordRes.json();
 
-      setCoordinates(coords); // 🆕 salvăm coordonatele
-      setProgress(coords.progress); // 🆕 progresul
+      setCoordinates(coords); 
+      setProgress(coords.progress);
 
       const res = await fetch('https://apicoordonateraspberry-production.up.railway.app/genereaza-imagine/', {
         method: 'POST',
@@ -59,7 +58,7 @@ export default function ProgressPage() {
           </Button>
         </div>
 
-        {/* Vizualizare */}
+        {}
         <div className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800 aspect-video flex items-center justify-center">
           {isLoading ? (
             <div className="text-center">
@@ -78,7 +77,7 @@ export default function ProgressPage() {
           )}
         </div>
 
-        {/* 🔵 Current Position */}
+        {}
         {coordinates && (
           <div className="w-full mt-6 text-center">
             <h2 className="text-lg font-semibold mb-2">Current Position:</h2>
@@ -87,7 +86,7 @@ export default function ProgressPage() {
           </div>
         )}
 
-        {/* 🔵 Progress bar */}
+        {}
         <div className="w-full mt-6">
           <p className="text-center mb-2">Progress: {progress}%</p>
           <div className="w-full bg-gray-200 rounded-full h-2.5">

@@ -62,10 +62,10 @@ export default function GenerateMagneticField() {
   };
 
   const handleGenerate2DGraph = async () => {
-    if (!file) return alert("Încarcă un fișier mai întâi.");
+    if (!file) return alert("Upload a file");
 
     const filledFields = [x, y, z].filter((val) => val.trim() !== "");
-    if (filledFields.length !== 2) return alert("Completează exact două valori.");
+    if (filledFields.length !== 2) return alert("Add 2 values");
 
     const formData = new FormData();
     formData.append("file", file);
@@ -87,18 +87,18 @@ export default function GenerateMagneticField() {
       setPlot2DUrl(`${data.url}?t=${Date.now()}`);
       setPlot2DData(data.table || []);
     } catch (error) {
-      console.error("Eroare la generare 2D:", error);
+      console.error("Error 2D generation", error);
     } finally {
       setIsLoading2D(false);
     }
   };
 
   const handleGenerateSection = async () => {
-    if (!file) return alert("Încarcă un fișier mai întâi.");
+    if (!file) return alert("Upload a file");
 
     const coords = { x: x.trim(), y: y.trim(), z: z.trim() };
     const filled = Object.entries(coords).filter(([_, val]) => val !== "");
-    if (filled.length !== 1) return alert("Completează exact o valoare pentru o secțiune.");
+    if (filled.length !== 1) return alert("Add 1 value");
 
     const [axis, value] = filled[0];
     const formData = new FormData();
@@ -113,7 +113,7 @@ export default function GenerateMagneticField() {
       });
 
       const data = await res.json();
-      if (!res.ok) return alert(data.error || "Eroare la generare secțiune.");
+      if (!res.ok) return alert(data.error || "Section view error");
 
       setSectionUrl(`${data.url}?t=${Date.now()}`);
       setSectionData(data.table || []);
@@ -179,7 +179,7 @@ export default function GenerateMagneticField() {
           </div>
         )}
 
-        {/* Plot 3D */}
+        {/* 3D */}
         <div className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800 aspect-video mb-8 flex items-center justify-center">
           {isLoading3D ? (
             <div className="text-center">
@@ -193,7 +193,7 @@ export default function GenerateMagneticField() {
           )}
         </div>
 
-        {/* 2D Plot & Table */}
+        {/* 2D */}
         {plot2DUrl && plot2DData && (
           <div ref={ref2D}>
             <iframe src={`https://apicampgenerat-production.up.railway.app${plot2DUrl}`} className="w-full aspect-video rounded-lg border-0" title="2D Cross Section" />
@@ -220,7 +220,7 @@ export default function GenerateMagneticField() {
           </div>
         )}
 
-        {/* Section Plot & Table */}
+        {/* Section view */}
         {sectionUrl && sectionData && (
           <div ref={refSection} className="mt-12">
             <iframe src={`https://apicampgenerat-production.up.railway.app${sectionUrl}`} className="w-full aspect-video rounded-lg border-0" title="Section Plot" />
@@ -248,7 +248,7 @@ export default function GenerateMagneticField() {
         )}
       </div>
 
-      {/* Floating Buttons */}
+      {/* Buttons */}
       {(plot2DUrl || sectionUrl) && (
         <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
           {plot2DUrl && (

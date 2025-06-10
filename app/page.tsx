@@ -3,7 +3,6 @@ import { cookies } from "next/headers"
 import { LoginForm } from "@/components/login-form"
 
 export default function Home() {
-  // Check if user is logged in
   const cookieStore = cookies()
   const isLoggedIn = cookieStore.has("auth")
 

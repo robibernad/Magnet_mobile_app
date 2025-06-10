@@ -8,7 +8,6 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  // Check if user is logged in
   const cookieStore = cookies()
   const isLoggedIn = cookieStore.has("auth")
 
