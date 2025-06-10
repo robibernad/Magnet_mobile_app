@@ -9,13 +9,15 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold">Menu</h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">Select an option</p>
         </div>
-        <div className="space-y-2">
-          <Link href="/dashboard/generate" className="w-full">
+        <div className="w-full">
+          <Link href="/dashboard/generate" className="w-full block">
             <Button size="lg" className="w-full">
               Generate Magnetic Field
             </Button>
           </Link>
-          <Link href="/dashboard/progress" className="w-full">
+        </div>
+        <div className="w-full mt-2">
+          <Link href="/dashboard/progress" className="w-full block">
             <Button size="lg" className="w-full">
               View Progress on Current Measurement
             </Button>
