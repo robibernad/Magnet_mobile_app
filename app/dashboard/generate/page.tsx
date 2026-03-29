@@ -49,11 +49,16 @@ export default function GenerateMagneticField() {
           body: formData,
         });
 
-        if (!res.ok) throw new Error("Upload failed");
         const data = await res.json();
-        setPlotUrl(data.url);
+        if (!res.ok) {
+          alert(data.error || "Upload failed");
+          setPlotUrl(null);
+        } else {
+          setPlotUrl(data.url);
+        }
       } catch (error) {
         console.error("Upload error:", error);
+        alert("Upload failed. Check your network connection or file format.");
         setPlotUrl(null);
       } finally {
         setIsLoading3D(false);
@@ -106,6 +111,7 @@ export default function GenerateMagneticField() {
     formData.append("axis", axis);
     formData.append("value", value);
 
+    setIsLoading2D(true);
     try {
       const res = await fetch("https://apicampgenerat-production.up.railway.app/api/section-1d", {
         method: "POST",
@@ -120,6 +126,9 @@ export default function GenerateMagneticField() {
       setSectionLabel(`${axis}${value}`);
     } catch (error) {
       console.error("Section Error:", error);
+      alert("Section generation failed. Check your network connection.");
+    } finally {
+      setIsLoading2D(false);
     }
   };
 
